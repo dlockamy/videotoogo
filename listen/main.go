@@ -29,16 +29,17 @@ func main() {
 	r.HandleFunc("/stream/{video-id}", streamVideo)
 	r.HandleFunc("/stream/{video-id}/ctl", streamCtl)
 
-	http.ListenAndServe(":3001", handlers.LoggingHandler(os.Stdout, r))
+	http.ListenAndServe(":3002", handlers.LoggingHandler(os.Stdout, r))
 }
 
-func invalidVideoID(videoID string, w http.ResponseWriter, r *http.Request) {
+func invalidVideoID(videoID string, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
+
 	//TODO: define a standard error object and return it as JSON
 	//	payload, _ := json.Marshal(videoError)
 	//w.Write([]byte(payload))
 
-	w.Write([]byte("Video Item Not Found"))
+	w.Write([]byte("Video " + videoID + "Item Not Found"))
 }
 
 func listStreams(w http.ResponseWriter, r *http.Request) {
@@ -58,13 +59,13 @@ func streamVideo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
 	if videoItem.Slug != "" {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte("Product Not Found"))
 		payload, _ := json.Marshal(videoItem)
 		w.Write([]byte(payload))
 	} else {
-		w.Write([]byte("Product Not Found"))
+		invalidVideoID(videoItem.Slug, w)
 	}
 }
 
@@ -79,12 +80,11 @@ func streamCtl(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
 	if videoItem.Slug != "" {
+		w.Header().Set("Content-Type", "application/json")
 		payload, _ := json.Marshal(videoItem)
 		w.Write([]byte(payload))
 	} else {
-		w.Write([]byte("Product Not Found"))
+		invalidVideoID(videoItem.Slug, w)
 	}
 }

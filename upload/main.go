@@ -17,9 +17,9 @@ import (
 func main() {
 	r := mux.NewRouter()
 
-	r.Handle("/blocks", http.FileServer(http.Dir("./blocks")))
+	r.HandleFunc("/upload", upload)
 
-	http.ListenAndServe(":3000", handlers.LoggingHandler(os.Stdout, r))
+	http.ListenAndServe(":3001", handlers.LoggingHandler(os.Stdout, r))
 }
 
 func upload(w http.ResponseWriter, r *http.Request) {
@@ -41,7 +41,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		}
 		defer file.Close()
 		fmt.Fprintf(w, "%v", handler.Header)
-		f, err := os.OpenFile("./test/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+		f, err := os.OpenFile("./blocks/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
 			fmt.Println(err)
 			return
