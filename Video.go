@@ -1,4 +1,4 @@
-package github.com/dlockamy/videotogo
+package videotogo
 
 type Video struct {
 	Id          int
