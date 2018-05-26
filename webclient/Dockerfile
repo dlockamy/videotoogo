@@ -4,4 +4,4 @@ ADD webclient /
 ADD www /www
 RUN chmod +x /webclient
 
-CMD ["webclient"]
+CMD ["/webclient"]
