@@ -11,46 +11,80 @@ import (
 	"github.com/dlockamy/videotogo"
 )
 
-var products = []Video{
-	Video{Id: 1, Name: "Hover Shooters", Slug: "hover-shooters", Description: "Do cool things on your hover board and laser cannon"},
-	Video{Id: 2, Name: "Laser Shooters", Slug: "laser-shooters", Description: "Do cool things with laser cannon"},
-	Video{Id: 3, Name: "Hover Boat", Slug: "hover-boat", Description: "Do cool things on your boad and laser cannon"},
+var videoCatalog = []videotogo.Video{
+	videotogo.Video{Id: 1, Name: "Hover Shooters", Slug: "hover-shooters", Description: "Do cool things on your hover board and laser cannon"},
+	videotogo.Video{Id: 2, Name: "Laser Shooters", Slug: "laser-shooters", Description: "Do cool things with laser cannon"},
+	videotogo.Video{Id: 3, Name: "Hover Boat", Slug: "hover-boat", Description: "Do cool things on your boad and laser cannon"},
 }
-
-var StatusHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Api is up and running"))
-})
-
-var ProductsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	payload, _ := json.Marshal(products)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(payload))
-})
-
-var AddFeedBackHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	var product Video
-	vars := mux.Vars(r)
-	slug := vars["slug"]
-
-	for _, p := range products {
-		if p.Slug == slug {
-			product = p
-		}
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	if product.Slug != "" {
-		payload, _ := json.Marshal(product)
-		w.Write([]byte(payload))
-	} else {
-		w.Write([]byte("Product Not Found"))
-	}
-})
 
 func main() {
 	r := mux.NewRouter()
 
 	r.Handle("/", http.FileServer(http.Dir("./www/")))
+
+	r.Handle("/block", http.FileServer(http.Dir("./data/")))
+
+	r.HandleFunc("/list", listStreams)
+
+	r.HandleFunc("/stream/{video-id}", streamVideo)
+	r.HandleFunc("/stream/{video-id}/ctl", streamCtl)
+
 	http.ListenAndServe(":3001", handlers.LoggingHandler(os.Stdout, r))
+}
+
+func invalidVideoID(videoID string, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	//TODO: define a standard error object and return it as JSON
+	//	payload, _ := json.Marshal(videoError)
+	//w.Write([]byte(payload))
+
+	w.Write([]byte("Video Item Not Found"))
+}
+
+func listStreams(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	payload, _ := json.Marshal(videoCatalog)
+	w.Write([]byte(payload))
+}
+
+func streamVideo(w http.ResponseWriter, r *http.Request) {
+	var videoItem videotogo.Video
+	vars := mux.Vars(r)
+	slug := vars["video-id"]
+
+	for _, p := range videoCatalog {
+		if p.Slug == slug {
+			videoItem = p
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if videoItem.Slug != "" {
+		payload, _ := json.Marshal(videoItem)
+		w.Write([]byte(payload))
+	} else {
+		w.Write([]byte("Product Not Found"))
+	}
+}
+
+func streamCtl(w http.ResponseWriter, r *http.Request) {
+	var videoItem videotogo.Video
+	vars := mux.Vars(r)
+	slug := vars["video-id"]
+
+	for _, p := range videoCatalog {
+		if p.Slug == slug {
+			videoItem = p
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if videoItem.Slug != "" {
+		payload, _ := json.Marshal(videoItem)
+		w.Write([]byte(payload))
+	} else {
+		w.Write([]byte("Product Not Found"))
+	}
 }
