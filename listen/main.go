@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 
@@ -11,13 +12,17 @@ import (
 	"github.com/dlockamy/videotogo"
 )
 
-var videoCatalog = []videotogo.Video{
-	videotogo.Video{Id: 1, Name: "Hover Shooters", Slug: "hover-shooters", Description: "Do cool things on your hover board and laser cannon"},
-	videotogo.Video{Id: 2, Name: "Laser Shooters", Slug: "laser-shooters", Description: "Do cool things with laser cannon"},
-	videotogo.Video{Id: 3, Name: "Hover Boat", Slug: "hover-boat", Description: "Do cool things on your boad and laser cannon"},
-}
+var videoDb videotogo.VideoDB
+var dbPath = "./var/data/videos.json"
 
 func main() {
+	if _, err := os.Stat(dbPath); err != nil {
+		log.Println("Error loading Videos DB, unable to continue")
+		return
+	}
+
+	videoDb = *videotogo.LoadDB(dbPath)
+
 	r := mux.NewRouter()
 
 	r.Handle("/", http.FileServer(http.Dir("./www/")))
@@ -43,8 +48,9 @@ func invalidVideoID(videoID string, w http.ResponseWriter) {
 }
 
 func listStreams(w http.ResponseWriter, r *http.Request) {
+
 	w.Header().Set("Content-Type", "application/json")
-	payload, _ := json.Marshal(videoCatalog)
+	payload, _ := json.Marshal(videoDb.GetAvailableVideos())
 	w.Write([]byte(payload))
 }
 
@@ -52,6 +58,8 @@ func streamVideo(w http.ResponseWriter, r *http.Request) {
 	var videoItem videotogo.Video
 	vars := mux.Vars(r)
 	slug := vars["video-id"]
+
+	var videoCatalog = videoDb.GetAvailableVideos()
 
 	for _, p := range videoCatalog {
 		if p.Slug == slug {
@@ -73,6 +81,8 @@ func streamCtl(w http.ResponseWriter, r *http.Request) {
 	var videoItem videotogo.Video
 	vars := mux.Vars(r)
 	slug := vars["video-id"]
+
+	var videoCatalog = videoDb.GetAvailableVideos()
 
 	for _, p := range videoCatalog {
 		if p.Slug == slug {

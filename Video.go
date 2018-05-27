@@ -1,9 +1,9 @@
 package videotogo
 
 type Video struct {
-	Id          int
-	Name        string
-	Slug        string
-	Description string
-	BlockHash   string
+	Id          int    `json:"id"`
+	Name        string `json:"name"`
+	Slug        string `json:"slug"`
+	Description string `json:"description"`
+	BlockHash   string `json:"blockhash"`
 }
