@@ -21,18 +21,12 @@ func main() {
 		return
 	}
 
-	videoDb = *videotogo.LoadDB(dbPath)
-
 	r := mux.NewRouter()
-
 	r.Handle("/", http.FileServer(http.Dir("./www/")))
-
 	r.Handle("/block", http.FileServer(http.Dir("./data/")))
-
 	r.HandleFunc("/list", listStreams)
-
 	r.HandleFunc("/stream/{video-id}", streamVideo)
-	r.HandleFunc("/stream/{video-id}/ctl", streamCtl)
+	r.HandleFunc("/stream/{session-id}/ctl", streamCtl)
 
 	http.ListenAndServe(":3002", handlers.LoggingHandler(os.Stdout, r))
 }
@@ -50,11 +44,13 @@ func invalidVideoID(videoID string, w http.ResponseWriter) {
 func listStreams(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
+	videoDb = *videotogo.LoadDB(dbPath)
 	payload, _ := json.Marshal(videoDb.GetAvailableVideos())
 	w.Write([]byte(payload))
 }
 
 func streamVideo(w http.ResponseWriter, r *http.Request) {
+	videoDb = *videotogo.LoadDB(dbPath)
 	var videoItem videotogo.Video
 	vars := mux.Vars(r)
 	slug := vars["video-id"]

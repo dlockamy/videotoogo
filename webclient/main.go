@@ -10,7 +10,6 @@ import (
 
 func main() {
 	r := mux.NewRouter()
-
 	r.Handle("/", http.FileServer(http.Dir("./www")))
 
 	http.ListenAndServe(":3000", handlers.LoggingHandler(os.Stdout, r))

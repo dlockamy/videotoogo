@@ -6,13 +6,25 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 
+	"github.com/dlockamy/videotogo"
 	"github.com/fsnotify/fsnotify"
 
 	"gopkg.in/h2non/filetype.v1"
 )
 
+var videoDb videotogo.VideoDB
+var dbPath = "./var/data/videos.json"
+
 func main() {
+	if _, err := os.Stat(dbPath); err != nil {
+		log.Println("Error loading Videos DB, unable to continue")
+		return
+	}
+
+	videoDb = *videotogo.LoadDB(dbPath)
+
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
@@ -25,7 +37,6 @@ func main() {
 			select {
 			case event := <-watcher.Events:
 				if event.Op&fsnotify.Create == fsnotify.Create {
-					log.Println("modified file:", event.Name)
 					processNewFile(event.Name)
 				}
 			case err := <-watcher.Errors:
@@ -53,7 +64,7 @@ func generateHashFileName(path string) string {
 		log.Fatal(err)
 	}
 
-	return fmt.Sprintf("%x", h.Sum(nil)) //string(h.Sum(nil))
+	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
 func processNewFile(path string) {
@@ -63,14 +74,12 @@ func processNewFile(path string) {
 	file.Read(head)
 
 	if filetype.IsVideo(head) {
-
-		newFileName := "./var/blocks/" + generateHashFileName(path)
-
-		log.Printf("New File name = " + newFileName)
-
+		var hashID = generateHashFileName(path)
+		newFileName := "./var/blocks/" + hashID
 		os.Rename(path, newFileName)
+
+		videoDb.AddVideo(videotogo.Video{Id: hashID, Name: filepath.Base(path)})
 	} else {
-		log.Println("Not an video")
 		os.Remove(path)
 	}
 }

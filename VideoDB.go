@@ -18,11 +18,16 @@ func NewDB() *VideoDB {
 func LoadDB(path string) *VideoDB {
 	var v = &VideoDB{dbFilePath: path}
 	v.loadFromDisk()
+	v.dbFilePath = path
 	return v
 }
 
 func (v *VideoDB) AddVideo(video Video) {
 	v.videoCatalog = append(v.videoCatalog, video)
+
+	if v.dbFilePath != "" {
+		v.saveToDisk()
+	}
 }
 
 func (v *VideoDB) GetAvailableVideos() []Video {
