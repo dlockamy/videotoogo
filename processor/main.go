@@ -34,7 +34,7 @@ func main() {
 		}
 	}()
 
-	err = watcher.Add("./uploads")
+	err = watcher.Add("./var/uploads")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,7 +64,7 @@ func processNewFile(path string) {
 
 	if filetype.IsVideo(head) {
 
-		newFileName := "./blocks/" + generateHashFileName(path)
+		newFileName := "./var/blocks/" + generateHashFileName(path)
 
 		log.Printf("New File name = " + newFileName)
 

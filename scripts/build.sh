@@ -13,7 +13,7 @@ rm upload
 cd ..
 
 cd processor
-env GOOS=linux  go build -o upload main.go 
+env GOOS=linux  go build -o processor main.go 
 docker build -t local/processor .
 rm processor
 cd ..

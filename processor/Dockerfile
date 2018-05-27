@@ -1,5 +1,5 @@
 FROM centos
 
-ADD upload /
-RUN chmod +x /upload
+ADD processor /
+RUN chmod +x /processor
 CMD ["/processor"]
