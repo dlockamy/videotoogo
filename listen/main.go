@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -14,6 +15,8 @@ import (
 
 var videoDb videotogo.VideoDB
 var dbPath = "./var/data/videos.json"
+
+const BUFSIZE = 1024 * 8
 
 func main() {
 	if _, err := os.Stat(dbPath); err != nil {
@@ -35,9 +38,6 @@ func invalidVideoID(videoID string, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 
 	//TODO: define a standard error object and return it as JSON
-	//	payload, _ := json.Marshal(videoError)
-	//w.Write([]byte(payload))
-
 	w.Write([]byte("Video " + videoID + "Item Not Found"))
 }
 
@@ -50,26 +50,63 @@ func listStreams(w http.ResponseWriter, r *http.Request) {
 }
 
 func streamVideo(w http.ResponseWriter, r *http.Request) {
-	videoDb = *videotogo.LoadDB(dbPath)
-	var videoItem videotogo.Video
 	vars := mux.Vars(r)
 	slug := vars["video-id"]
 
-	var videoCatalog = videoDb.GetAvailableVideos()
+	var filePath = "./var/blocks/" + slug
 
-	for _, p := range videoCatalog {
-		if p.Slug == slug {
-			videoItem = p
-		}
-	}
+	log.Printf("loading " + filePath)
 
-	if videoItem.Slug != "" {
+	if _, err := os.Stat(filePath); err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte("Product Not Found"))
-		payload, _ := json.Marshal(videoItem)
+		payload, _ := json.Marshal(slug)
 		w.Write([]byte(payload))
-	} else {
-		invalidVideoID(videoItem.Slug, w)
+	}
+
+	file, err := os.Open(filePath)
+
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
+
+	defer file.Close()
+
+	fi, err := file.Stat()
+
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
+
+	fileSize := int(fi.Size())
+
+	contentLength := strconv.Itoa(fileSize)
+	contentEnd := strconv.Itoa(fileSize - 1)
+
+	w.Header().Set("Content-Type", "video/mp4")
+	w.Header().Set("Accept-Ranges", "bytes")
+	w.Header().Set("Content-Length", contentLength)
+	w.Header().Set("Content-Range", "bytes 0-"+contentEnd+"/"+contentLength)
+	w.WriteHeader(200)
+
+	buffer := make([]byte, BUFSIZE)
+
+	for {
+		n, err := file.Read(buffer)
+
+		if n == 0 {
+			break
+		}
+
+		if err != nil {
+			break
+		}
+
+		data := buffer[:n]
+		w.Write(data)
+		w.(http.Flusher).Flush()
 	}
 }
 
