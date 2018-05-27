@@ -11,6 +11,7 @@
 # Data folders
 blocks
 data
+uploads
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
