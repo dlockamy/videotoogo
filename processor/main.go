@@ -76,9 +76,15 @@ func processNewFile(path string) {
 	if filetype.IsVideo(head) {
 		var hashID = generateHashFileName(path)
 		newFileName := "./var/blocks/" + hashID
-		os.Rename(path, newFileName)
 
-		videoDb.AddVideo(videotogo.Video{Id: hashID, Name: filepath.Base(path)})
+		if _, err := os.Stat(newFileName); err != nil {
+			os.Rename(path, newFileName)
+
+			videoDb.AddVideo(videotogo.Video{Id: hashID, Name: filepath.Base(path)})
+			return
+		}
+
+		os.Remove(path)
 	} else {
 		os.Remove(path)
 	}
