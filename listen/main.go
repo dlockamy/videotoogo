@@ -42,7 +42,8 @@ func invalidVideoID(videoID string, w http.ResponseWriter) {
 }
 
 func listStreams(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	videoDb = *videotogo.LoadDB(dbPath)
 	payload, _ := json.Marshal(videoDb.GetAvailableVideos())
@@ -85,6 +86,8 @@ func streamVideo(w http.ResponseWriter, r *http.Request) {
 	contentLength := strconv.Itoa(fileSize)
 	contentEnd := strconv.Itoa(fileSize - 1)
 
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "video/mp4")
 	w.Header().Set("Accept-Ranges", "bytes")
 	w.Header().Set("Content-Length", contentLength)
@@ -124,6 +127,8 @@ func streamCtl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if videoItem.Slug != "" {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
 		payload, _ := json.Marshal(videoItem)
 		w.Write([]byte(payload))

@@ -1,12 +1,47 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-   	<title>Upload file</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta charset="utf-8">
+	<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
+	<link rel="stylesheet" href="http://v4-alpha.getbootstrap.com/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-route.js"></script>
+   	<title>Video to Go</title>
 </head>
-<body>
-<form enctype="multipart/form-data" action="http://127.0.0.1:3001/upload" method="post">
-	<input type="file" name="uploadfile" />
-	<input type="hidden" name="token" value="{{.}}"/>
-	<input type="submit" value="upload" />
-</form>
+<body ng-app="videotogo">
+	<header>
+		<nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse">
+			<button class="navbar-toggler navbar-toggler-right hidden-lg-up" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+				  <span class="navbar-toggler-icon"></span>
+			</button>
+			<a class="navbar-brand" href="#">Video To Go</a>
+				<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+				  <ul class="navbar-nav mr-auto">
+					<li class="nav-item">
+						<a class="nav-link" href="#!upload">
+							<span class="glyphicon glyphicon-upload">Upload</span>
+						</a>
+					</li>
+				  </ul>
+				</div>
+			  </nav>
+  	</header>
+
+  	<div class="container-fluid">
+		<div class="row">
+		  	<nav class="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar" ng-controller="movieListCtr">
+				<ul class="nav nav-pills flex-column">
+					<h3>Available Movies</h3>
+					<ul id="movie-list">
+					</ul>
+				</ul>
+		  	</nav> 
+			<main class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 pt-3" ng-view>	
+			</main>
+		</div>
+	</div>
+	<script src="client.js"></script>
 </body>
 </html>
