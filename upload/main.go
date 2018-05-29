@@ -19,10 +19,12 @@ func main() {
 }
 
 func upload(w http.ResponseWriter, r *http.Request) {
+
 	fmt.Println("method:", r.Method)
 	if r.Method == "GET" {
 		w.Write([]byte("Video Upload Only"))
 	} else {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		r.ParseMultipartForm(32 << 20)
 		file, handler, err := r.FormFile("uploadfile")
 		if err != nil {

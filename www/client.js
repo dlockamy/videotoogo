@@ -45,3 +45,23 @@ app.controller('moviePlayerCtr', function($scope,$routeParams) {
     }
 
 });
+
+app.controller('FileUploadController', function ($scope) {
+     $scope.uploadFile = function () {
+        var uploadUrl = "http://127.0.0.1:3001/upload";
+        var formElement = document.querySelector("form");
+        var xhr = new XMLHttpRequest();
+
+        xhr.open('POST', uploadUrl, true);
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+              console.log("Starting upload");
+            } else {
+              alert('An error occurred!');
+            }
+          };
+
+          xhr.send(new FormData(formElement));
+    };
+});
