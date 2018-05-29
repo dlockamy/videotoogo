@@ -1,3 +1,5 @@
+var baseURL = "http://127.0.0.1"
+
 var app = angular.module("videotogo", ["ngRoute"]);
 
 app.config(function($routeProvider) {
@@ -15,7 +17,7 @@ app.config(function($routeProvider) {
 });
 
 app.controller('movieListCtr', function($scope, $http) {
-    $http.get("http://127.0.0.1:3002/list")
+    $http.get(baseURL+":3002/list")
     .then(function(response) {
         var movieList = response.data
         var list = document.getElementById("movie-list")
@@ -41,14 +43,14 @@ app.controller('moviePlayerCtr', function($scope,$routeParams) {
     if($scope.playVideo != ""){
         var videoPlayer = document.getElementById("movieScreen");
 
-        videoPlayer.src = "http://127.0.0.1:3002/stream/" + $scope.playVideo;
+        videoPlayer.src = baseURL+":3002/stream/" + $scope.playVideo;
     }
 
 });
 
 app.controller('FileUploadController', function ($scope) {
      $scope.uploadFile = function () {
-        var uploadUrl = "http://127.0.0.1:3001/upload";
+        var uploadUrl = baseURL+":3001/upload";
         var formElement = document.querySelector("form");
         var xhr = new XMLHttpRequest();
 
