@@ -1,7 +1,7 @@
 FROM centos
 
-ADD webclient /
+ADD web /
 ADD www /www
-RUN chmod +x /webclient
+RUN chmod +x /web
 
-CMD ["/webclient"]
+CMD ["/web"]
