@@ -8,8 +8,9 @@ Building the project requires go to be installed and configured as well as Docke
 The build expects to be able to call Docker to build images so you must be a user in the Docker group or running as root (which, of course, is highly unadvisable).
 
 Once go and Docker are configured pull source:
+```
   go get github.com/dlockamy/videotogo
-
+```
 Or:
 ```
   git clone https://github.com/dlockamy/videotoogo.git   
