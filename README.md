@@ -54,10 +54,20 @@ Services can be stoped with
 
 While four services are started, only three have public facing endpoints. Each service handles a single task and is intended to sit behind an ingress server that would present the group of services as a single api as well as handle authentication and https transport.
 
-localhost:3000 The user interface and AngularJS application allow for the upload, browsing and playback of video files.
+```
+localhost:3000
+The user interface and AngularJS application allow for the upload, browsing and playback of video files.
+```
+```
+localhost:3001 
+This is the upload service that listens POST upload.
+```
 
-localhost:3001 This is the upload service that listens POST upload.
-
-localhost:3002 Listens for browse requests and returns a list of available video files. File meta data is kept in a .json file that is used as an ad hoc database.
-
-Processor: While it doesn't have a public interface, this process is run in a container just as the other processes. This service uses Linux fsnotify to listen for changes to an upload directory and once a new file arrives creates a hash based on file contents (to prevent duplicate video files from being stored) and move the file to the permament storage folder.
+```
+localhost:3002 
+Listens for browse requests and returns a list of available video files. File meta data is kept in a .json file that is used as an ad hoc database.
+```
+```
+Processor: 
+While it doesn't have a public interface, this process is run in a container just as the other processes. This service uses Linux fsnotify to listen for changes to an upload directory and once a new file arrives creates a hash based on file contents (to prevent duplicate video files from being stored) and move the file to the permament storage folder.
+```
