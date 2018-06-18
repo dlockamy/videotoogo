@@ -47,9 +47,18 @@ To run the services as a Kubernetes Pod.
 Services can be stoped with 
 
 ```
+  chmod +x ./scripts/killservices.sh
+  ./scripts/killservies.sh 
+```
+
+Cleanup all containers:
+
+```
   chmod +x ./scripts/nukeservices.sh
   ./scripts/nukeservides.sh 
 ```
+
+
 # Use
 
 While four services are started, only three have public facing endpoints. Each service handles a single task and is intended to sit behind an ingress server that would present the group of services as a single api as well as handle authentication and https transport.
