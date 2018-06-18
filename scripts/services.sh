@@ -1,6 +1,34 @@
 #!/bin/bash
 echo "Starting services. Use killservices.sh to exit all services."
 
+# Check to make sure we have an active database
+DATAROOT=./var
+BLOCKSDIR=./var/blocks
+DATABASEDIR=./var/data
+DATABASE=./var/data/videos.json
+UPLOADDIR=./var/uploads
+
+
+if [ ! -d $DATAROOT ]; then
+   mkdir $DATAROOT;
+fi
+
+if [ ! -d $BLOCKSDIR ]; then
+   mkdir $BLOCKSDIR;
+fi
+
+if [ ! -d $DATABASEDIR ]; then
+   mkdir $DATABASEDIR;
+fi
+   
+if [ ! -f $DATABASE ]; then
+   go run cmd/builddb/buildDB.go
+fi
+
+if [ ! -d $UPLOADDIR ]; then
+   mkdir $UPLOADDIR;
+fi
+
 ROOT_DIR=$(pwd)
 
 echo "root = $ROOT_DIR"
